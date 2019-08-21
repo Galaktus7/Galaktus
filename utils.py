@@ -228,7 +228,7 @@ def prepare_custom_fight(game):
     # Организация словаря
     game.player_dict = {p.chat_id: p for p in game.players}
     game.gamestate = 'weapon'
-    bot.send_message(game.cid, 'Diqqat jang boshlanayabdi!!!')
+    bot.send_message(game.cid, 'Diqqat jang boshlanmoqda!!!')
 
     # Список активных игроков и раздача итемов
     for p in game.players:
