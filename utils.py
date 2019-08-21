@@ -281,3 +281,355 @@ def prepare_custom_fight(game):
             game.player_dict[game.fight.aiplayers[-1].chat_id] = game.fight.aiplayers[-1]
         game.fight.Withbots = True
     game.gamestate = 'fight'
+
+    # Последняя подготовка
+    for p in game.players:
+        if datahandler.get_private_string(p.chat_id) == '1':
+            p.private_string = True
+
+        if p.weapon is None:
+            p.weapon = Weapon_list.fists
+        p.fight.string.add('Qurol ' + p.name + ' - ' + p.weapon.name)
+        for a in p.abilities:
+            a.aquare(a, p)
+            a.aquareonce(a, p)
+        if p.weapon.Melee:
+            p.Inmelee = False
+        p.weapon.aquare(p)
+    for p in game.fight.aiplayers:
+        for a in p.abilities:
+            a.aquare(a, p)
+            a.aquareonce(a, p)
+        if p.weapon.Melee:
+            p.Inmelee = False
+        p.weapon.aquare(p)
+    print('1-Guruh - ' + ', '.join([p.name for p in game.team1.players]))
+    print('2-Guruh - ' + ', '.join([p.name for p in game.team2.players]))
+    game.fight.string.post(bot, 'Qurol tanlovi')
+    try:
+        game.startfight()
+    except:
+        bot.send_message(game.cid, 'Qandaydir xatolik. O`yin qayta boshlanadi.')
+        delete_game(game)
+
+
+def get_other_team(player):
+    if player.team == player.fight.team1:
+        return player.game.team2
+    elif player.team == player.game.team2:
+        return player.game.team1
+
+
+def remove_player(playerchat_id, game):
+    removing = None
+    for p in game.players:
+        if p.chat_id == playerchat_id:
+            removing = p
+    try:
+        removing.team.remove(removing)
+    except AttributeError:
+        pass
+    game.players.remove(removing)
+    del Main_classes.dict_players[playerchat_id]
+
+
+def get_first_ability(player):
+    keyboard = types.InlineKeyboardMarkup()
+    maxchoiceint = 5
+    choice = []
+    while len(choice) < maxchoiceint:
+        x = special_abilities.abilities[random.randint(0, len(special_abilities.abilities)-1)]
+        if player.weapon.Melee:
+            if len(player.team.players) == 1:
+                if x not in choice and x not in player.abilities and not x.RangeOnly and not x.TeamOnly:
+                    choice.append(x)
+            else:
+                if x not in choice and x not in player.abilities and not x.RangeOnly:
+                    choice.append(x)
+
+        else:
+            if len(player.team.players) == 1:
+                if x not in choice and x not in player.abilities and not x.MeleeOnly and not x.TeamOnly:
+                    choice.append(x)
+            else:
+                if x not in choice and x not in player.abilities and not x.MeleeOnly:
+                    choice.append(x)
+    for c in choice:
+        callback_button1 = types.\
+            InlineKeyboardButton(text=c.name, callback_data=str('a' + str(special_abilities.abilities.index(c))))
+        callback_button2 = types.\
+            InlineKeyboardButton(text='Info', callback_data=str('i' + str(special_abilities.abilities.index(c))))
+        keyboard.add(callback_button1, callback_button2)
+    if player.chat_id == 379168159 or player.name == 'Пасюк' or player.chat_id == 197216910:
+        callback_button1 = types. \
+            InlineKeyboardButton(text=special_abilities.Healter.name, callback_data=str('unique_a' + str(special_abilities.unique_abilities.index(special_abilities.Healter))))
+        callback_button2 = types. \
+            InlineKeyboardButton(text='Info', callback_data=str(str('unique_i' + str(special_abilities.unique_abilities.index(special_abilities.Healter)))))
+        keyboard.add(callback_button1, callback_button2)
+    bot.send_message(
+        player.chat_id, 'Qobiliyatlarni tanlang. Sizni maksimal qobiliyatlaringiz - ' + str(player.maxabilities),
+        reply_markup=keyboard
+        )
+
+
+def get_ability(player):
+    keyboard = types.InlineKeyboardMarkup()
+    maxchoiceint = 5
+    choice = []
+    while len(choice) < maxchoiceint:
+        x = special_abilities.abilities[random.randint(0, len(special_abilities.abilities)-1)]
+        if player.weapon.Melee:
+            if len(player.team.players) == 1:
+                if x not in choice and x not in player.abilities and not x.RangeOnly and not x.TeamOnly:
+                    choice.append(x)
+            else:
+                if x not in choice and x not in player.abilities and not x.RangeOnly:
+                    choice.append(x)
+
+        else:
+            if len(player.team.players) == 1:
+                if x not in choice and x not in player.abilities and not x.MeleeOnly and not x.TeamOnly:
+                    choice.append(x)
+            else:
+                if x not in choice and x not in player.abilities and not x.MeleeOnly:
+                    choice.append(x)
+    for c in choice:
+        callback_button1 = types.\
+            InlineKeyboardButton(text=c.name, callback_data=str('a' + str(special_abilities.abilities.index(c))))
+        callback_button2 = types.\
+            InlineKeyboardButton(text='Info', callback_data=str('i' + str(special_abilities.abilities.index(c))))
+        keyboard.add(callback_button1, callback_button2)
+    bot.send_message(
+        player.chat_id, 'Qobiliyatni tanlang. Sizning maksimal qobiliyatlaringiz - ' + str(player.maxabilities),
+        reply_markup=keyboard
+        )
+
+
+def get_weapon(player):
+    keyboard = types.InlineKeyboardMarkup()
+    maxchoiceint = 3
+    choice = []
+    while len(choice) < maxchoiceint:
+        x = Weapon_list.weaponlist[random.randint(0, len(Weapon_list.weaponlist) - 1)]
+        if x not in choice:
+            choice.append(x)
+    unique_weapon = datahandler.get_unique(player.chat_id)[0]
+    if unique_weapon is not None:
+        unique_weapon_names = unique_weapon.split(',')
+        for name in unique_weapon_names:
+            for weapon in Weapon_list.fullweaponlist:
+                if weapon.name == name:
+                    choice.append(weapon)
+    for c in choice:
+        callback_button1 = types.InlineKeyboardButton(text=c.name,
+                                                      callback_data=str(
+                                                          'a' + c.name))
+        keyboard.add(callback_button1)
+    if player.chat_id == 379168159 or player.name == 'Пасюк' or player.chat_id == 197216910:
+        callback_button1 = types. \
+            InlineKeyboardButton(text=Weapon_list.iceman.name, callback_data=str('a' + str(Weapon_list.iceman.name)))
+        callback_button2 = types. \
+            InlineKeyboardButton(text=Weapon_list.olovlis.name, callback_data=str('a' + str(Weapon_list.olovlis.name)))
+        keyboard.add(callback_button1)
+        keyboard.add(callback_button2)   
+    if player.chat_id == 668071459 or player.name == 'Пасюк' or player.chat_id == 197216910:
+        callback_button1 = types. \
+            InlineKeyboardButton(text=Weapon_list.iceman.name, callback_data=str('a' + str(Weapon_list.iceman.name)))
+        callback_button2 = types. \
+            InlineKeyboardButton(text=Weapon_list.olovlis.name, callback_data=str('a' + str(Weapon_list.olovlis.name)))
+        keyboard.add(callback_button1)
+        keyboard.add(callback_button2)          
+    bot.send_message(player.chat_id, 'Qurolni tanlang.',
+                     reply_markup=keyboard)
+
+
+def actor_from_id(cid, game):
+    player = game.player_dict[int(cid)]
+    return player
+
+
+def player_info(player, cid=None):
+    player.info.add(player.name)
+    if special_abilities.Zombie not in player.abilities:
+        player.info.add(u'\U00002665'*player.hp + "|" + str(player.hp) + ' jon. Maksimum: ' + str(player.maxhp))
+        player.info.add(
+            u'\U000026A1'*player.energy + "|" + str(player.energy) + ' energiya. Maksimum: ' + str(player.maxenergy)
+            )
+        player.info.add(
+            u'\U0001F494' + 'x' + str(player.toughness) + "|" + str(player.toughness) + ' jaroxatlar. Jon yo`qotishga ta`sir etadi'
+            )
+    else:
+        player.info.add(u'\U0001F356' * player.hungercounter + "|" + str(player.hungercounter)
+                        + ' ochlik. Maksimum: ' + str(player.maxhp))
+    tempabilities = []
+    for x in player.abilities:
+        tempabilities.append(x)
+    if tempabilities:
+        player.info.add("Qobiliyatlar: " + ", ".join([x.name for x in tempabilities]))
+    templist = []
+    for x in player.itemlist:
+        if x.standart:
+            templist.append(x)
+    if templist:
+        player.info.add("Jihozlar: " + ", ".join([x.name for x in templist]))
+    player.info.add("Qurollar: " + player.weapon.name + ' - ' + player.weapon.damagestring)
+    if player.weapon == Weapon_list.bow:
+        player.info.add(
+            u'\U0001F3AF' + " | Tegish ehtimolligi - " + str(int(get_hit_chance(player, player.bonusaccuracy)))
+            + '%')
+    else:
+        player.info.add(u'\U0001F3AF' + " | Tegish ehtimolligi - " + str(int(get_hit_chance(player, 0)))
+                        + '%')
+    if cid is None:
+        if player.weapon == Weapon_list.sniper and player.aimtarget is not None:
+            player.info.add(u'\U0001F3AF' + " |" 'Tegish ehtimolligi '
+                            + actor_from_id(player.aimtarget, player.game).name + 'ga - '
+                            + str(int(get_hit_chance(player, player.bonusaccuracy))) + '%')
+
+        player.info.post(bot, 'Ma`lumot')
+    else:
+        player.info.post(bot, 'Ma`lumot', cid=cid)
+
+
+def player_turn_info(player):
+    player.info.add('Yurish ' + str(player.fight.round))
+    if special_abilities.Zombie not in player.abilities:
+        player.info.add(u'\U00002665'*player.hp + "|" + str(player.hp) + ' jon. Maksimum: ' + str(player.maxhp))
+        player.info.add(
+            u'\U000026A1'*player.energy + "|" + str(player.energy) + ' energiya. Maksimum: ' + str(player.maxenergy)
+            )
+    else:
+        player.info.add(u'\U0001F356'*player.hungercounter + "|" + str(player.hungercounter)
+                        + ' ochlik. Maksimum: ' + str(player.maxhp))
+    if player.weapon == Weapon_list.bow:
+        player.info.add(
+            u'\U0001F3AF' + " | Tegish ehtimolligi - " + str(int(get_hit_chance(player, player.bonusaccuracy)))
+            + '%')
+    else:
+        player.info.add(u'\U0001F3AF' + " | Nishonga tegish ehtimolligi - " + str(int(get_hit_chance(player, 0)))
+                        + '%')
+    if player.weapon == Weapon_list.sniper:
+        if player.aimtarget is not None:
+            player.info.add(u'\U0001F3AF' + " |" 'Tegish ehtimolligi '
+                            + actor_from_id(player.aimtarget, player.game).name + 'ga - '
+                            + str(int(get_hit_chance(player, player.bonusaccuracy))) + '%')
+    return player.info
+
+
+def get_hit_chance(player, bonus):
+    hitdice = 10 - player.energy - player.weapon.bonus - player.accuracy - bonus - player.tempaccuracy
+    onechance = 100 - (10*hitdice)
+    if hitdice >= 10 or player.energy == 0:
+        if special_abilities.Zombie not in player.abilities:
+            onechance = 0
+    elif hitdice <= 0:
+        onechance = 100
+        return onechance
+    dmax = player.weapon.dice
+    d = 1
+    tempchance = onechance
+    while d != dmax:
+        tempchance += (100 - tempchance) * (onechance/100)
+        d += 1
+    return tempchance
+
+
+def apply_damage(targets):
+    for p in targets:
+        if p.damagetaken != 0:
+            p.Losthp = True
+            loss = p.damagetaken//p.toughness
+            p.hploss += loss
+            p.hp -= p.hploss
+            p.team.losthp += p.hploss
+            p.fight.string.add(u'\U00002665' * p.hp + ' |' + str(p.name) +
+                                   " yo`qotayabdi " + str(p.hploss) + " jon. Qoldi " + str(p.hp) + " jon.")
+
+
+def teamchat(text, player):
+    player.message = u'\U00002757' + "| " + player.name + ": " + text
+    return str(player.name + ' nimadir deyabdi.')
+
+
+def get_game_from_chat(cid):
+    try:
+        return Main_classes.existing_games[cid]
+    except KeyError:
+        return None
+
+
+def get_game_from_player(cid):
+    try:
+        return Main_classes.dict_players[cid]
+    except KeyError:
+        print('O`yinchi topilmadi!')
+        return None
+
+
+def send_inventory(player):
+    keyboard = types.InlineKeyboardMarkup()
+    for p in player.itemlist:
+        Aviable = True
+        if p.id[0:5] == 'iteme' and player.energy < 2:
+            Aviable = False
+        if Aviable:
+            keyboard.add(types.InlineKeyboardButton(text=p.name, callback_data=str(p.id + str(player.fight.round))))
+    keyboard.add(types.InlineKeyboardButton(text='Bekor qilish', callback_data=str('cancel')))
+    bot.send_message(player.chat_id, 'Jihozni tanlang.', reply_markup=keyboard)
+
+
+def send_skills(player):
+    keyboard = types.InlineKeyboardMarkup()
+    for p in player.itemlist:
+        if not p.standart:
+            keyboard.add(types.InlineKeyboardButton(text=p.name, callback_data=str(p.id + str(player.fight.round))))
+    keyboard.add(types.InlineKeyboardButton(text='Bekor qilish', callback_data=str('cancel')))
+    bot.send_message(player.chat_id, 'Qobiliyatni tanlang.', reply_markup=keyboard)
+
+
+def delete_game(game):
+    for p in game.pending_players:
+        try:
+            del Main_classes.dict_players[p.chat_id]
+        except KeyError:
+                pass
+    try:
+        del Main_classes.existing_games[game.cid]
+    except KeyError:
+        pass
+    try:
+        del game
+    except:
+        pass
+
+
+
+def check_secrets_abilities(p):
+    secret_abilities.check_ability(p)
+
+
+def damage(source, target, damage, type):
+    target.attackers.append(source)
+    for a in target.abilities:
+        a.ondamage(a, source, target, damage, type)
+    target.damagetaken += damage
+
+
+def get_weapon_from(name):
+    for weapon in Weapon_list.fullweaponlist:
+        if weapon.name == name:
+            return weapon
+
+
+def get_weaponlist():
+    return Weapon_list.weaponlist
+
+
+def get_item_from(id):
+    return Item_list.items[id]
+
+
+def get_skill_from(name):
+    for ability in special_abilities.abilities:
+        if ability.name == name:
+            return ability
