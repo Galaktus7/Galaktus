@@ -19,7 +19,7 @@ def prepare_fight(game):
     # Организация словаря
     game.player_dict = {p.chat_id: p for p in game.players}
     game.gamestate = 'weapon'
-    bot.send_message(game.cid, 'Jang boshlanmoqda!')
+    bot.send_message(game.cid, 'Diqqat jang boshlanmoqda!!!')
 
     # Список активных игроков и раздача итемов
     for p in game.players:
@@ -42,7 +42,7 @@ def prepare_fight(game):
     while game.weaponcounter > 0 and game.waitings is True:
         time.sleep(3)
     if game.weaponcounter == 0:
-        bot.send_message(game.cid, 'Qurol tanlandi.')
+        bot.send_message(game.cid, 'Qurollar tanlandi.')
 
     else:
         for p in game.players:
@@ -93,7 +93,7 @@ def prepare_fight(game):
     while game.abilitycounter > 0 and game.waitings is True:
         time.sleep(5)
     if game.abilitycounter == 0:
-        bot.send_message(game.cid, 'Qobiliyatlar tanlandi. Jang boshlanayabdi.')
+        bot.send_message(game.cid, 'Qobiliyatlar tanlandi. Jang boshlanmoqda.')
     else:
         for p in game.players:
             if len(p.abilities) < p.maxabilities:
@@ -103,7 +103,7 @@ def prepare_fight(game):
                     if x not in p.abilities:
                         p.abilities.append(x)
                         countera -= 1
-        bot.send_message(game.cid, 'Qobiliyatlar tanlandi yoki taqribiy tarqatildi. Birinchi raund boshlanayabdi.')
+        bot.send_message(game.cid, 'Qobiliyatlar tanlandi yoki taqribiy tarqatildi yoxud kimdir ğirromlik qilmoqda . Birinchi raund boshlanayabdi.')
     timer.cancel()
 
     # Подключение ai-противников
@@ -136,13 +136,13 @@ def prepare_fight(game):
             game.abilitycounter = len(game.players)
             game.fight.Withbots = True
     elif game.gametype == 'new':
-        boss = ai.Thanoscha('☸️|𝕋ℍ𝔸ℕ𝕆𝕊 ' + '|' + '🧛🏽‍♂', game, game.team2, len(game.team1.players))
+        boss = ai.Thanoscha('☸️|THANOS ' + '|' + '🧛🏽‍♂', game, game.team2, len(game.team1.players))
         game.team2.actors.append(boss)
         game.fight.aiplayers.append(game.team2.actors[-1])
         game.aiplayers.append(game.team2.actors[-1])
         game.player_dict[game.fight.aiplayers[-1].chat_id] = game.fight.aiplayers[-1]
         for x in range(0, len(game.team1.players)):
-            game.team2.actors.append(ai.New('𝕂𝕆𝕊𝕄𝕀𝕂 𝕂𝔼𝕄𝔸 ' + str(x + 1) + '|' + '🛰', game, game.team2))
+            game.team2.actors.append(ai.New('SAMOVIY KEMA ' + str(x + 1) + '|' + '🛰', game, game.team2))
             game.fight.aiplayers.append(game.team2.actors[-1])
             game.aiplayers.append(game.team2.actors[-1])
             game.player_dict[game.fight.aiplayers[-1].chat_id] = game.fight.aiplayers[-1]
@@ -157,7 +157,7 @@ def prepare_fight(game):
             game.abilitycounter = len(game.players)
             game.fight.Withbots = True        
     elif game.gametype == 'sup':
-            boss = ai.Sup('⚫️|ℚ𝕠𝕣𝕒 𝔸𝕛𝕒𝕝' + '|' + '💀', game, game.team2,
+            boss = ai.Sup('⚫️|QORA AJAL' + '|' + '💀', game, game.team2,
                         random.choice([Weapon_list.magniy, Weapon_list.magniy]))
             game.team2.actors.append(boss)
             game.fight.aiplayers.append(game.team2.actors[-1])
@@ -220,7 +220,7 @@ def prepare_fight(game):
     try:
         game.startfight()
     except:
-        bot.send_message(game.cid, 'Qandaydir xatolik o`yin qayta boshlanadi.')
+        bot.send_message(game.cid, 'Qandaydir xatolik o`yin tõxtatildi .')
         delete_game(game)
 
 
@@ -228,7 +228,7 @@ def prepare_custom_fight(game):
     # Организация словаря
     game.player_dict = {p.chat_id: p for p in game.players}
     game.gamestate = 'weapon'
-    bot.send_message(game.cid, 'Jang boshlanayabdi!')
+    bot.send_message(game.cid, 'Diqqat jang boshlanayabdi!!!')
 
     # Список активных игроков и раздача итемов
     for p in game.players:
