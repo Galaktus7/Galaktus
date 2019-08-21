@@ -1,0 +1,24 @@
+{
+  "addons": [
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "TELEGRAM_TOKEN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "bot": {
+      "quantity": 1
+    }
+  },
+  "name": "heroku_development_1",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
